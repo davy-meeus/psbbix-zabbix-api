@@ -338,6 +338,142 @@ Function Get-ZabbixVersion {
 	}
 }
 
+
+Function Get-ZabbixProxy {
+	<# 
+	.Synopsis
+		Get Proxy
+	.Description
+		Get Proxy
+	.Parameter Name
+		To filter by name of the Proxy (case sensitive)
+	.Parameter ProxyID
+		To filter by id of the Proxy
+	.Example
+		Get-ZabbixProxy
+		Get all Proxys 
+	.Example
+		Get-ZabbixProxy -Name "Proxy1"
+		Get Proxy by name (case sensitive)
+	#>
+    
+	[CmdletBinding()]
+	[Alias("gzt")]
+	Param (
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$Name,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$ProxyID,
+		#[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostID,
+		#[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$hostids,
+		#[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$parentTemplates,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
+    )
+   
+	process {
+
+		if (!(Get-ZabbixSession)) {return}
+
+		$boundparams=$PSBoundParameters | out-string
+		write-verbose "($boundparams)"
+
+		$Body = @{
+			method = "proxy.get"
+			params = @{
+				output = "extend"
+				selectHosts = "extend"
+				selectTemplates = "extend"
+				selectParentTemplates = "extend"
+				selectGroups = "extend"
+				selectHttpTests = "extend"
+				selectItems = "extend"
+				selectTriggers = "extend"
+				selectApplications = "extend"
+				selectMacros = "extend"
+				selectScreens = "extend"
+				filter = @{
+					host = $Name
+				}
+				# templateids = $TemplateID
+				proxyid = $ProxyID
+			}
+			jsonrpc = $jsonrpc
+			id = $id
+			auth = $session
+		}
+
+		$BodyJSON = ConvertTo-Json $Body
+		write-verbose $BodyJSON
+		try {
+			$a = Invoke-RestMethod "$URL/api_jsonrpc.php" -ContentType "application/json" -Body $BodyJSON -Method Post
+			if ($a.result) {$a.result} else {$a.error}
+		} catch {
+			Write-Host "$_"
+			Write-Host "Too many entries to return from Zabbix server. Check/reduce the filters." -f cyan
+		}
+	}
+}
+
+Function New-ZabbixProxy {
+	<# 
+	.Synopsis
+		Create new Proxy
+	.Description
+		Create new Proxy
+	.Parameter Name
+		(Required) Proxy hostname: Technical name of the Proxy
+	.Parameter Description
+		Description of the Proxy
+	.Example
+		New-ZabbixProxy -Name "newProxyName" 
+		Create new Proxy 
+	#>
+	
+	[CmdletBinding()]
+	[Alias("nzp")]
+	Param (
+		[Alias("host")][Parameter(Mandatory=$True,ValueFromPipelineByPropertyName=$True)][string]$Name,
+		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$Description,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$session=($global:zabSessionParams.session),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$id=($global:zabSessionParams.id),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$URL=($global:zabSessionParams.url)
+    )
+	
+	process {
+
+		if (!(Get-ZabbixSession)) {return}
+		elseif (!$psboundparameters.count) {Write-MissingParamsMessage; return}
+
+		$boundparams=$PSBoundParameters | out-string
+		write-verbose "($boundparams)"
+		
+		$Body = @{
+			method = "proxy.create"
+			params = @{
+				host = $Name
+				# name = $TemplateVisibleName
+				description = $Description
+				#groups = if ($GroupID) {@($grp)} else {$groups}
+				status = "5"
+			}
+
+			jsonrpc = $jsonrpc
+			id = $id
+			auth = $session
+		}
+
+		$BodyJSON = ConvertTo-Json $Body -Depth 3
+		write-verbose $BodyJSON
+		
+		$a = Invoke-RestMethod "$URL/api_jsonrpc.php" -ContentType "application/json" -Body $BodyJSON -Method Post
+		#$a.result | Select-Object Name,TemplateID,@{Name="HostsMembers";Expression={$_.hosts.hostid}}
+		if ($a.result) {$a.result} else {$a.error}
+	}
+}
+
+
 Function Get-ZabbixHost {
 	<# 
 	.Synopsis
@@ -3078,6 +3214,107 @@ Function Set-ZabbixTrigger {
 				triggerid = $TriggerID
 				status = $status
 			}
+			
+			jsonrpc = $jsonrpc
+			id = $id
+			auth = $session
+		}
+		
+		$BodyJSON = ConvertTo-Json $Body
+		write-verbose $BodyJSON
+		
+		$a = Invoke-RestMethod "$URL/api_jsonrpc.php" -ContentType "application/json" -Body $BodyJSON -Method Post
+		if ($a.result) {$a.result} else {$a.error}
+	}
+}
+
+
+Function Add-ZabbixDependencies {
+	<# 
+	.Synopsis
+		Add trigger dependencies
+	.Description
+		Add a dependency on a trigger
+    .Example
+        Get-ZabbixTrigger -HostID <hostId>|foreach{Add-ZabbixDependencies -TriggerID $_ -dependsOnTriggerid <triggerId>}
+    .Example
+        Add-ZabbixDependencies -TriggerID <triggerId> -dependsOnTriggerid <triggerId>
+	#>
+
+	[CmdletBinding()]
+	[Alias("azdp")]
+	Param (
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$TriggerID,
+		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$dependsOnTriggerid,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
+    )
+	
+	process {
+		
+		if (!(Get-ZabbixSession)) {return}
+		elseif (!$psboundparameters.count) {Write-MissingParamsMessage; return}
+
+		$boundparams=$PSBoundParameters | out-string
+		write-verbose "($boundparams)"
+
+        
+		$Body = @{
+			method = "trigger.adddependencies"
+			params = @{
+				triggerid = $TriggerID
+				dependsOnTriggerid = $dependsOnTriggerid
+			}
+			
+			jsonrpc = $jsonrpc
+			id = $id
+			auth = $session
+		}
+		
+		$BodyJSON = ConvertTo-Json $Body
+		write-verbose $BodyJSON
+		
+		$a = Invoke-RestMethod "$URL/api_jsonrpc.php" -ContentType "application/json" -Body $BodyJSON -Method Post
+		if ($a.result) {$a.result} else {$a.error}
+	}
+}
+
+
+Function Delete-ZabbixDependencies {
+	<# 
+	.Synopsis
+		Deletes ALL trigger dependencies 
+	.Description
+		Deletes ALL dependencies from a trigger
+    .Example
+        Delete-ZabbixDependencies -TriggerID <triggerId>
+    .Example
+        Delete-ZabbixDependencies -TriggerID 12345,12346
+	#>
+
+	[CmdletBinding()]
+	[Alias("dzdp")]
+	Param (
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TriggerID,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
+    )
+	
+	process {
+		
+		if (!(Get-ZabbixSession)) {return}
+		elseif (!$psboundparameters.count) {Write-MissingParamsMessage; return}
+
+		$boundparams=$PSBoundParameters | out-string
+		write-verbose "($boundparams)"
+        
+		$Body = @{
+			method = "trigger.deleteDependencies"
+			params = $TriggerID
 			
 			jsonrpc = $jsonrpc
 			id = $id
