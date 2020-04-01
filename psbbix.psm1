@@ -3229,16 +3229,16 @@ Function Set-ZabbixTrigger {
 }
 
 
-Function Add-ZabbixDependencies {
+Function New-ZabbixDependency {
 	<# 
 	.Synopsis
 		Add trigger dependencies
 	.Description
 		Add a dependency on a trigger
     .Example
-        Get-ZabbixTrigger -HostID <hostId>|foreach{Add-ZabbixDependencies -TriggerID $_ -dependsOnTriggerid <triggerId>}
+        Get-ZabbixTrigger -HostID <hostId>|foreach{New-ZabbixDependency -TriggerID $_ -dependsOnTriggerid <triggerId>}
     .Example
-        Add-ZabbixDependencies -TriggerID <triggerId> -dependsOnTriggerid <triggerId>
+        New-ZabbixDependency -TriggerID <triggerId> -dependsOnTriggerid <triggerId>
 	#>
 
 	[CmdletBinding()]
@@ -3282,16 +3282,16 @@ Function Add-ZabbixDependencies {
 }
 
 
-Function Delete-ZabbixDependencies {
+Function Remove-ZabbixDependencies {
 	<# 
 	.Synopsis
 		Deletes ALL trigger dependencies 
 	.Description
 		Deletes ALL dependencies from a trigger
     .Example
-        Delete-ZabbixDependencies -TriggerID <triggerId>
+        Remove-ZabbixDependencies -TriggerID <triggerId>
     .Example
-        Delete-ZabbixDependencies -TriggerID 12345,12346
+        Remove-ZabbixDependencies -TriggerID 12345,12346
 	#>
 
 	[CmdletBinding()]
