@@ -362,9 +362,6 @@ Function Get-ZabbixProxy {
 	Param (
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$Name,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$ProxyID,
-		#[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostID,
-		#[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$hostids,
-		#[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$parentTemplates,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
@@ -383,19 +380,10 @@ Function Get-ZabbixProxy {
 			params = @{
 				output = "extend"
 				selectHosts = "extend"
-				selectTemplates = "extend"
-				selectParentTemplates = "extend"
-				selectGroups = "extend"
-				selectHttpTests = "extend"
-				selectItems = "extend"
-				selectTriggers = "extend"
-				selectApplications = "extend"
-				selectMacros = "extend"
-				selectScreens = "extend"
+				selectInterface = "extend"
 				filter = @{
 					host = $Name
 				}
-				# templateids = $TemplateID
 				proxyid = $ProxyID
 			}
 			jsonrpc = $jsonrpc
@@ -423,8 +411,6 @@ Function New-ZabbixProxy {
 		Create new Proxy
 	.Parameter Name
 		(Required) Proxy hostname: Technical name of the Proxy
-	.Parameter Description
-		Description of the Proxy
 	.Example
 		New-ZabbixProxy -Name "newProxyName" 
 		Create new Proxy 
@@ -434,7 +420,7 @@ Function New-ZabbixProxy {
 	[Alias("nzp")]
 	Param (
 		[Alias("host")][Parameter(Mandatory=$True,ValueFromPipelineByPropertyName=$True)][string]$Name,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$Description,
+		#[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$Hosts,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$id=($global:zabSessionParams.id),
@@ -448,14 +434,15 @@ Function New-ZabbixProxy {
 
 		$boundparams=$PSBoundParameters | out-string
 		write-verbose "($boundparams)"
+
+   		for ($i=0; $i -lt $Hosts.length; $i++) {[array]$zhosts+=$(@{interfaceid = $($Hosts[$i])})}
+
 		
 		$Body = @{
 			method = "proxy.create"
 			params = @{
 				host = $Name
-				# name = $TemplateVisibleName
 				description = $Description
-				#groups = if ($GroupID) {@($grp)} else {$groups}
 				status = "5"
 			}
 
@@ -561,6 +548,7 @@ Function Get-ZabbixHost {
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)]$HostName,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$HostID,
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$GroupID,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$ProxyId,
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$HttpTestID,
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][string]$SortBy="name",
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$status,
@@ -628,6 +616,7 @@ Function Get-ZabbixHost {
 				)
 				hostids = $HostID
 				groupids = $GroupID
+                proxyids = $ProxyId
 				httptestid = $HttpTestID
 				filter = @{
 					host = $HostName
@@ -6695,4 +6684,136 @@ Function Set-ZabbixHostInventory {
 		}
 	}
 
+}
+
+Function Get-ZabbixTriggerPrototype {
+	<# 
+	.Synopsis
+		Get trigger prototype
+	.Description
+		Get trigger prototype
+	.Parameter Name
+		To filter by name of the Proxy (case sensitive)
+	.Parameter ProxyID
+		To filter by id of the Proxy
+	.Example
+		Get-ZabbixProxy
+		Get all Proxys 
+	.Example
+		Get-ZabbixProxy -Name "Proxy1"
+		Get Proxy by name (case sensitive)
+	#>
+    
+	[CmdletBinding()]
+	[Alias("gztp")]
+	Param (
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostName,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostIds,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TriggerIds,
+
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
+    )
+   
+	process {
+
+		if (!(Get-ZabbixSession)) {return}
+
+		$boundparams=$PSBoundParameters | out-string
+		write-verbose "($boundparams)"
+
+		$Body = @{
+			method = "triggerprototype.get"
+			params = @{
+				output = "extend"
+				selectHosts = "extend"
+				selectDependencies = "extend"
+				selectDiscoveryRule = "extend"
+				selectGroups = "extend"
+				selectItems = "extend"
+				filter = @{
+					host = $HostName
+                    hostids = $HostIds
+                    triggerids = $TriggerIds 
+				}
+				
+			}
+			jsonrpc = $jsonrpc
+			id = $id
+			auth = $session
+		}
+
+		$BodyJSON = ConvertTo-Json $Body
+		write-verbose $BodyJSON
+		try {
+			$a = Invoke-RestMethod "$URL/api_jsonrpc.php" -ContentType "application/json" -Body $BodyJSON -Method Post
+			if ($a.result) {$a.result} else {$a.error}
+		} catch {
+			Write-Host "$_"
+			Write-Host "Too many entries to return from Zabbix server. Check/reduce the filters." -f cyan
+		}
+	}
+}
+
+Function Update-ZabbixTriggerPrototype {
+	<# 
+	.Synopsis
+		Update trigger prototype
+	.Description
+		Update trigger prototype
+	.Parameter Name
+		To filter by name of the Proxy (case sensitive)
+	.Parameter ProxyID
+		To filter by id of the Proxy
+	.Example
+		Get-ZabbixProxy
+		Get all Proxys 
+	.Example
+		Get-ZabbixProxy -Name "Proxy1"
+		Get Proxy by name (case sensitive)
+	#>
+    
+	[CmdletBinding()]
+	[Alias("gztp")]
+	Param (
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TriggerId,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$Dependency,
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
+    )
+   
+	process {
+
+		if (!(Get-ZabbixSession)) {return}
+
+		$boundparams=$PSBoundParameters | out-string
+		write-verbose "($boundparams)"
+
+		$Body = @{
+			method = "triggerprototype.get"
+			params = @{
+				triggerid = $TriggerId
+				dependencies = $Dependency
+                
+				
+			}
+			jsonrpc = $jsonrpc
+			id = $id
+			auth = $session
+		}
+
+		$BodyJSON = ConvertTo-Json $Body
+		write-verbose $BodyJSON
+		try {
+			$a = Invoke-RestMethod "$URL/api_jsonrpc.php" -ContentType "application/json" -Body $BodyJSON -Method Post
+			if ($a.result) {$a.result} else {$a.error}
+		} catch {
+			Write-Host "$_"
+			Write-Host "Too many entries to return from Zabbix server. Check/reduce the filters." -f cyan
+		}
+	}
 }
