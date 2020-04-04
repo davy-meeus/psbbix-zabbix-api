@@ -6632,7 +6632,7 @@ Function Get-ZabbixTriggerPrototype {
 				selectItems = "extend"
 				filter = @{
 					host = $HostName
-                    hostids = $HostIds
+                    			hostids = $HostIds
 
 				}
 				
@@ -6669,11 +6669,11 @@ Function Set-ZabbixTriggerPrototype {
 	[Alias("sztr")]
 	Param (
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$TriggerID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$status,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$status,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$DependencyId,
-		[switch]$ExpandDescription,
-		[switch]$ExpandExpression,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
+	[switch]$ExpandDescription,
+	[switch]$ExpandExpression,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
@@ -6695,7 +6695,7 @@ Function Set-ZabbixTriggerPrototype {
 			params = @{
 				triggerid = $TriggerID
 				status = $status
-                dependencies = @($dpids)
+               			dependencies = @($dpids)
 			}
 			
 			jsonrpc = $jsonrpc
@@ -6718,9 +6718,9 @@ Function New-ZabbixDependency {
 		Add trigger dependencies
 	.Description
 		Add a dependency on a trigger
-    .Example
+   	 .Example
         Get-ZabbixTrigger -HostID <hostId>|foreach{New-ZabbixDependency -TriggerID $_ -dependsOnTriggerid <triggerId>}
-    .Example
+    	.Example
         New-ZabbixDependency -TriggerID <triggerId> -dependsOnTriggerid <triggerId>
 	#>
 
@@ -6728,7 +6728,7 @@ Function New-ZabbixDependency {
 	[Alias("azdp")]
 	Param (
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$TriggerID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$dependsOnTriggerid,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$dependsOnTriggerid,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
@@ -6771,10 +6771,10 @@ Function Remove-ZabbixDependencies {
 		Deletes ALL trigger dependencies 
 	.Description
 		Deletes ALL dependencies from a trigger
-    .Example
+    	.Example
         Remove-ZabbixDependencies -TriggerID <triggerId>
-    .Example
-        Remove-ZabbixDependencies -TriggerID 12345,12346
+    	.Example
+        Remove-ZabbixDependencies -TriggerID 12345
 	#>
 
 	[CmdletBinding()]
