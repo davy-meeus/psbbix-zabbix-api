@@ -362,10 +362,7 @@ Function Get-ZabbixProxy {
 	[Alias("gzt")]
 	Param (
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$Name,
-        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$ProxyID,
-																					 
-																					  
-																							  
+        [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$ProxyID,																						  
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
@@ -383,16 +380,8 @@ Function Get-ZabbixProxy {
 			method = "proxy.get"
 			params = @{
 				output = "extend"
-				selectHosts = "extend"
-							  
-									
-						   
-							  
-				selectInterface = "extend"
-							 
-								 
-						   
-							
+				selectHosts = "extend"			  
+				selectInterface = "extend"			
 				filter = @{
 					host = $Name
 				}
@@ -434,13 +423,13 @@ Function New-ZabbixProxy {
 	[CmdletBinding()]
 	[Alias("nzp")]
 	Param (
-		[Alias("host")][Parameter(Mandatory=$True,ValueFromPipelineByPropertyName=$True)][string]$Name,
-		#[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$Hosts,
+	Alias("host")][Parameter(Mandatory=$True,ValueFromPipelineByPropertyName=$True)][string]$Name,
+	#[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$Hosts,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$URL=($global:zabSessionParams.url)
-    )
+   	)
 	
 	process {
 
@@ -457,8 +446,7 @@ Function New-ZabbixProxy {
 			method = "proxy.create"
 			params = @{
 				host = $Name
-				hosts = $Hosts				 
-													
+				hosts = $Hosts				 									
 				status = "5"
 			}
 
@@ -563,16 +551,16 @@ Function Get-ZabbixHost {
 	Param (
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)]$HostName,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$HostID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$GroupID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$GroupID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$ProxyId,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$HttpTestID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][string]$SortBy="name",
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$status,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$HttpTestID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][string]$SortBy="name",
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$status,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
 	
 	process {
 
@@ -632,7 +620,7 @@ Function Get-ZabbixHost {
 				)
 				hostids = $HostID
 				groupids = $GroupID
-                proxyids = $ProxyId
+                		proxyids = $ProxyId
 				httptestid = $HttpTestID
 				filter = @{
 					host = $HostName
@@ -736,40 +724,40 @@ Function Set-ZabbixHost {
 	[Alias("szhst")]
 	Param (
         [Alias("host")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$HostName,
-		# Visible name of the host. Default: host property value.
-		[Alias("name")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$HostVisibleName,
+	# Visible name of the host. Default: host property value.
+	[Alias("name")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$HostVisibleName,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$HostID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$GroupID,
         [Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$groups,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$interfaceID,
         [Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$interfaces,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$TemplateID,
-		[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$parentTemplates,
-		# [Alias("parentTemplates")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$templates,
-		[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$templates,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]$Inventory,
-		[Alias("description")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$HostDescription,
-		# Host inventory population mode: Possible values are: -1 - disabled; 0 - (default) manual; 1 - automatic.
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$InventoryMode,
-		# IPMI authentication algorithm: Possible values are: -1 - (default) default; 0 - none; 1 - MD2; 2 - MD5; 4 - straight; 5 - OEM; 6 - RMCP+
-		[Alias("ipmi_authtype")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$IpmiAuthtype,
-		[Alias("ipmi_username")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$IpmiUsername,
-		[Alias("ipmi_password")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$IpmiPassword,
-		# IPMI privilege level: Possible values are: 1 - callback; 2 - (default) user; 3 - operator; 4 - admin; 5 - OEM.
-		[Alias("ipmi_privilege")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$IpmiPrivilege,
-		# [array]$GroupID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$HttpTestID,
-		# Status and function of the host: Possible values are: 0 - (default) monitored host; 1 - unmonitored host
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$status,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$ProxyHostID,
-																						
-		[switch]$removeTemplates,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$TemplateID,
+	[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$parentTemplates,
+	# [Alias("parentTemplates")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$templates,
+	[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$templates,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]$Inventory,
+	[Alias("description")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$HostDescription,
+	# Host inventory population mode: Possible values are: -1 - disabled; 0 - (default) manual; 1 - automatic.
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$InventoryMode,
+	# IPMI authentication algorithm: Possible values are: -1 - (default) default; 0 - none; 1 - MD2; 2 - MD5; 4 - straight; 5 - OEM; 6 - RMCP+
+	[Alias("ipmi_authtype")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$IpmiAuthtype,
+	[Alias("ipmi_username")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$IpmiUsername,
+	[Alias("ipmi_password")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$IpmiPassword,
+	# IPMI privilege level: Possible values are: 1 - callback; 2 - (default) user; 3 - operator; 4 - admin; 5 - OEM.
+	[Alias("ipmi_privilege")][Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$IpmiPrivilege,
+	# [array]$GroupID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$HttpTestID,
+	# Status and function of the host: Possible values are: 0 - (default) monitored host; 1 - unmonitored host
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$status,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][int]$ProxyHostID,
+																					
+	[switch]$removeTemplates,
 
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+	)
     
 	process {
 		
@@ -899,22 +887,22 @@ Function New-ZabbixHost {
 	Param (
         [Parameter(Mandatory=$True)][string]$HostName,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$false)][string]$IP,
-		[string]$DNSName,
-		[Switch]$MonitorByDNSName,
+	[string]$DNSName,
+	[Switch]$MonitorByDNSName,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$Port = 10050,
-		[Parameter(Mandatory=$True,ValueFromPipelineByPropertyName=$True)][string]$status,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$GroupID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$groups,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$TemplateID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][int]$ProxyHostID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$templates,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$interfaces,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$parentTemplates,
+	[Parameter(Mandatory=$True,ValueFromPipelineByPropertyName=$True)][string]$status,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$GroupID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$groups,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$TemplateID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][int]$ProxyHostID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$templates,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$False)][array]$interfaces,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][array]$parentTemplates,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
 
     process {
 
@@ -1008,13 +996,13 @@ Function Remove-ZabbixHost {
 	[CmdletBinding(SupportsShouldProcess,ConfirmImpact='High')]
 	[Alias("Delete-ZabbixHost","rzhst","dzhst")]
 	Param (
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$Name,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$Name,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
 	
     process {
 		
@@ -1082,22 +1070,22 @@ Function Remove-ZabbixHost {
 	[Alias("Clone-ZabbixHost","czhst")]
 	Param (
         [Parameter(Mandatory=$True,ValueFromPipelineByPropertyName=$false)][string]$HostName,
-		[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$HostID,
+	[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$HostID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$false)][array]$TemplateID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$false)][string]$IP,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$Port = 10050,
-		[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$interfaces,
-		[Alias("parentTemplates")][Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$templates,
-		[Parameter(Mandatory=$True,ValueFromPipelineByPropertyName=$true)][string]$status,
-		[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$groups,
+	[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$interfaces,
+	[Alias("parentTemplates")][Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$templates,
+	[Parameter(Mandatory=$True,ValueFromPipelineByPropertyName=$true)][string]$status,
+	[Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$groups,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$false)][string]$GroupID,
         [Parameter(DontShow,Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$httpTests,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$false)][int]$ProxyHostID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$false)][int]$ProxyHostID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
 
 	process {
 		
@@ -1182,14 +1170,14 @@ Function Get-ZabbixTemplate {
 	Param (
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateName,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$hostids,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$parentTemplates,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$hostids,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$parentTemplates,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
    
 	process {
 
@@ -3115,16 +3103,16 @@ Function Get-ZabbixTrigger {
 	[CmdletBinding()]
 	[Alias("gztr")]
 	Param (
-		[switch]$ExpandDescription,
-		[switch]$ExpandExpression,
+	[switch]$ExpandDescription,
+	[switch]$ExpandExpression,
         [array]$TriggerID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
 	
 	process {
 
@@ -3196,11 +3184,11 @@ Function Set-ZabbixTrigger {
 	[Alias("sztr")]
 	Param (
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$TriggerID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$status,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$status,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$DependencyId,
-		[switch]$ExpandDescription,
-		[switch]$ExpandExpression,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
+	[switch]$ExpandDescription,
+	[switch]$ExpandExpression,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
@@ -3215,7 +3203,7 @@ Function Set-ZabbixTrigger {
 		$boundparams=$PSBoundParameters | out-string
 		write-verbose "($boundparams)"
         
-        for ($i=0; $i -lt $DependencyId.length; $i++) {[array]$dpids+=@{triggerid = $DependencyId[$i]}}
+        	for ($i=0; $i -lt $DependencyId.length; $i++) {[array]$dpids+=@{triggerid = $DependencyId[$i]}}
 
 		$Body = @{
 			method = "trigger.update"
@@ -3267,15 +3255,15 @@ Function New-ZabbixTrigger {
         # [Parameter(ValueFromPipelineByPropertyName=$true)]$TriggerID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$TriggerDescription,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$TriggerExpression,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$status,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$status,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$triggertags,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$dependencies,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$dependencies,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
 	
 	process {
 		
@@ -3389,16 +3377,16 @@ Function Get-ZabbixItem {
 	[CmdLetBinding(DefaultParameterSetName="None")]
 	[Alias("gzi")]
 	Param (
-		[String]$SortBy="name",
-		[String]$ItemKey,
-		[String]$ItemName,
-		[string]$Description,
-		[Parameter(ParameterSetName="hostname",Mandatory=$False,ValueFromPipelineByPropertyName=$true)][String]$HostName,
-		[Parameter(ParameterSetName="hostid",Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostId,
-		[Parameter(ParameterSetName="hostid",Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
-		[Parameter(ParameterSetName="hostid",Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TriggerID,
-		[switch]$WebItems,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
+	[String]$SortBy="name",
+	[String]$ItemKey,
+	[String]$ItemName,
+	[string]$Description,
+	[Parameter(ParameterSetName="hostname",Mandatory=$False,ValueFromPipelineByPropertyName=$true)][String]$HostName,
+	[Parameter(ParameterSetName="hostid",Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$HostId,
+	[Parameter(ParameterSetName="hostid",Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
+	[Parameter(ParameterSetName="hostid",Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TriggerID,
+	[switch]$WebItems,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
@@ -3485,14 +3473,14 @@ Function Set-ZabbixItem {
 	[CmdletBinding()]
 	[Alias("szi")]
 	Param (
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$applicationid,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$status,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$applicationid,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$status,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$itemid,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
     
 	process {
 
@@ -3555,15 +3543,15 @@ Function Remove-ZabbixItem {
 	[CmdletBinding(SupportsShouldProcess,ConfirmImpact='High')]
 	[Alias("rzi")]
 	Param (
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$Name,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$applicationid,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$status,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$Name,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$applicationid,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$status,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$itemid,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
     
 	process {
 
@@ -6647,16 +6635,9 @@ Function Get-ZabbixTriggerPrototype {
 			method = "triggerprototype.get"
 			params = @{
 				output = "extend"					  
-                selectDependencies = "extend"
+                		selectDependencies = "extend"
 				selectDiscoveryRule = "extend"
-						   
-						  
-			   
-					 
-									 
-										   
-	 
-				
+		
 			}
 			jsonrpc = $jsonrpc
 			id = $id
@@ -6695,16 +6676,16 @@ Function Set-ZabbixTriggerPrototype {
 	[Alias("sztr")]
 	Param (
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$TriggerID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$status,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$status,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$DependencyId,
-		[switch]$ExpandDescription,
-		[switch]$ExpandExpression,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
+	[switch]$ExpandDescription,
+	[switch]$ExpandExpression,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][array]$TemplateID,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
 	
 	process {
 		
@@ -6715,14 +6696,14 @@ Function Set-ZabbixTriggerPrototype {
 		write-verbose "($boundparams)"
         
       
-         for ($i=0; $i -lt $DependencyId.length; $i++) {[array]$dpids+=@{triggerid = $DependencyId[$i]}}
+         	for ($i=0; $i -lt $DependencyId.length; $i++) {[array]$dpids+=@{triggerid = $DependencyId[$i]}}
 
 		        $Body = @{
 			        method = "triggerprototype.update"
 			        params = @{
 				        triggerid = $TriggerID
 				        status = $status
-                        dependencies = @($dpids)
+                        		dependencies = @($dpids)
 			        }
 			
 			        jsonrpc = $jsonrpc
@@ -6745,17 +6726,17 @@ Function New-ZabbixDependency {
 		Add trigger dependencies
 	.Description
 		Add a dependency on a trigger
-    .Example
-        Get-ZabbixTrigger -HostID <hostId>|foreach{New-ZabbixDependency -TriggerID $_ -dependsOnTriggerid <triggerId>}
-    .Example
-        New-ZabbixDependency -TriggerID <triggerId> -dependsOnTriggerid <triggerId>
+    	.Example
+        	Get-ZabbixTrigger -HostID <hostId>|foreach{New-ZabbixDependency -TriggerID $_ -dependsOnTriggerid <triggerId>}
+    	.Example
+        	New-ZabbixDependency -TriggerID <triggerId> -dependsOnTriggerid <triggerId>
 	#>
 
 	[CmdletBinding()]
 	[Alias("azdp")]
 	Param (
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)]$TriggerID,
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$dependsOnTriggerid,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$dependsOnTriggerid,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc=($global:zabSessionParams.jsonrpc),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
@@ -6798,10 +6779,10 @@ Function Remove-ZabbixDependencies {
 		Deletes ALL trigger dependencies 
 	.Description
 		Deletes ALL dependencies from a trigger
-    .Example
-        Remove-ZabbixDependencies -TriggerID <triggerId>
-    .Example
-        Remove-ZabbixDependencies -TriggerID 12345,12346
+    	.Example
+       		 Remove-ZabbixDependencies -TriggerID <triggerId>
+    	.Example
+        	Remove-ZabbixDependencies -TriggerID 12345,12346
 	#>
 
 	[CmdletBinding()]
@@ -6812,7 +6793,7 @@ Function Remove-ZabbixDependencies {
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session=($global:zabSessionParams.session),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id=($global:zabSessionParams.id),
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL=($global:zabSessionParams.url)
-    )
+    	)
 	
 	process {
 		
